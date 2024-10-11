@@ -1,10 +1,10 @@
 Package: timefitteR
-Title: What the Package Does (One Line, Title Case)
+Title: Finding the Most Suitable Linear Model for Longitudinal Data
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("John", "Kennedy", , "john.kennedy@unisa.edu.au", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-8126-7086"))
+Description: Exploring longitudinally collected data with the addition of subject factors to find the least complex model that explains sufficient variation in the data is an ongoging problem in the social sciences. This package takes tidy, long-format data and generates all possible and theoretically meaningful models from it to allow the researcher to make an informed decision around the "most suitable" model for this data.
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0)
