@@ -1,6 +1,12 @@
 #' Compute Cohen's f-squared for One or Two Linear Models
 #'
-#' This takes one or two linear models and returns the value of f^2 as outlined in Cohen (1988). f^2 is a measure of the *local* effect size of a model. By comparing two models using `cohen_f2(model0,model1)` the researcher can determine if the *effect* of including the additional predictor variables in model1 is significant enough to justify the increased complexity of the model.
+#' This takes one or two linear models and returns the value of f^2 as outlined in Cohen (1988).
+#'
+#' f^2 is a measure of the *local* effect size of a model. When using one model with the function e.g., `cohen_f2(model0)`, the researcher is testing to see if the difference between the values predicted by using the model are different that the actual values.
+#'
+#' With 1 model, the aim is to reduce f^2 as close to zero as possible or to at least below the moderate threshold. That is the effect size of using the model rather than the actual data is minimal.
+#'
+#' When comparing two models using `cohen_f2(model0,model1)` the researcher can determine if the *effect* of including the additional predictor variables in model1 is significant enough to justify the increased complexity of the model compared to model0. In this case, the hope is to maximise the value of f^2 and usually if f^2 is less than Moderate, it is wise **not** to accept the more complex model.
 #'
 #' Cohen suggested the following cut off values for f^2
 #'
