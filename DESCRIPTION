@@ -14,3 +14,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
     stats
+URL: https://github.com/DrJPK/timefitteR
+BugReports: https://github.com/DrJPK/timefitteR/issues
