@@ -1,12 +1,31 @@
-#' Internal Function to generate a sequence of time points in a semi-deterministic way
+#' Generate a sequence of time points in a semi-deterministic way
 #'
-#' This function is only called internally
+#'@description
+#'
+#' This function should only be **called internally**. This function generates a sequence of values (attitude scores) using a defined quadratic function. Random, normal noise is added to each of the coefficients according to the value of noise and noise_ratio. Further explicitly defined modifiers are applied to intercept and slope depending on gender and SES levels. Noise multipliers can be also defined by these factor variables.
+#'
+#'@details
+#' The default model has the following properties with respect to time:
+#' - Both boys and girls have an initial attitude of 0
+#' - Low SES students have an initial attitude of 0, while medium SES students have an attitude of 0.5 and high SES students have an attitude of 0.8.
+#' - Boys develop at 1.0 point per time period while girls develop at 0.9 (1-0.1) points per time period
+#' - Low SES students develop at 1.0 points per time period while medium SES develop at 1.05 points per time period and high SES develop at 1.075 points per time period.
+#' - No curvature is expected.
+#' - Default noise is drawn randomly from a normal distribution of mean=0 and sd=2 and applied at EVERY time point separately. This models those random factors that vary over time.
+#' - Further default noise is applied to the participant's individual initial intercept, slope and curvature to model those factors that vary per participant. By default these are drawn randomly from normal distributions with mean=0 and sd=1.00 (intercept: 2 &times; 0.5), sd=0.20 (slope: 2 &times; 0.1), sd=0.04 (curvature: 2 &times; 0.02)
+#' - All additional multipliers for noise due to gender and SES are set to 1. i.e. SES and Gender do not account for any increased noise
+#'
+#' Returns a tibble in the form:
+#' | timepoint | id | gender | ses | attitude |
+#' |-----------|----|--------|-----|----------|
+#' | 1 | a | Boy | Low | 0.234534 |
 #'
 #' @param id a character vector to use as an id for this participant
 #' @param intercept default value of attitude at t = 0
 #' @param slope default 1st order regression coefficient
 #' @param curvature default 2nd order regression coefficient
 #' @param noise default SD of noise added to attitude at each timepoint
+#' @param noise_ratio relative strengths of noise applied to initial intercept, slope and curvature BEFORE other factors
 #' @param gender a factor string for this participant Boy | Girl
 #' @param ses a factor string for this participant Low | Medium | High
 #' @param from first time point
@@ -24,7 +43,7 @@
 #' @param high_slope_offset Constant that is added to the slope calculations for high ses participant
 #' @param high_slope_noise Multiplier that is applied to the noise component of the slope calculations for high ses participant
 #'
-#' @return A tibble of the form |Timepoint|id|gender|ses|attitude|
+#' @return A tibble of sequence data in long format
 #'
 #' @examples
 #' generate_attitude_sequence('a')
@@ -34,11 +53,12 @@ generate_attitude_sequence <- function(id,
                                        slope = 1,
                                        curvature = 0,
                                        noise = 2,
+                                       noise_ratio = c(0.5,0.1,0.02),
                                        gender = "Boy",
                                        ses = "Low",
                                        from = 0,
                                        to = 10,
-                                       gender_intercept_offset = 1,
+                                       gender_intercept_offset = 0,
                                        gender_intercept_noise = 1,
                                        gender_slope_offset = -0.1,
                                        gender_slope_noise = 1,
@@ -46,14 +66,14 @@ generate_attitude_sequence <- function(id,
                                        medium_intercept_noise = 1,
                                        medium_slope_offset = 0.05,
                                        medium_slope_noise = 1,
-                                       high_intercept_offset = 1.5,
+                                       high_intercept_offset = 0.8,
                                        high_intercept_noise = 1,
                                        high_slope_offset = 0.075,
                                        high_slope_noise = 1) {
   ## Set some fixed noise values for this participant i.e. participant level random effect
-  a_noise <- rnorm(1, 0, noise / 2)
-  b_noise <- rnorm(1, 0, noise / 10)
-  c_noise <- rnorm(1, 0, noise / 50)
+  a_noise <- rnorm(1, 0, noise * noise_ratio[1])
+  b_noise <- rnorm(1, 0, noise * noise_ratio[2])
+  c_noise <- rnorm(1, 0, noise * noise_ratio[3])
 
   ## Modify the random effects based on factor levels
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_attitude_sequence.R
 \name{generate_attitude_sequence}
 \alias{generate_attitude_sequence}
-\title{Internal Function to generate a sequence of time points in a semi-deterministic way}
+\title{Generate a sequence of time points in a semi-deterministic way}
 \usage{
 generate_attitude_sequence(
   id,
@@ -10,11 +10,12 @@ generate_attitude_sequence(
   slope = 1,
   curvature = 0,
   noise = 2,
+  noise_ratio = c(0.5, 0.1, 0.02),
   gender = "Boy",
   ses = "Low",
   from = 0,
   to = 10,
-  gender_intercept_offset = 1,
+  gender_intercept_offset = 0,
   gender_intercept_noise = 1,
   gender_slope_offset = -0.1,
   gender_slope_noise = 1,
@@ -22,7 +23,7 @@ generate_attitude_sequence(
   medium_intercept_noise = 1,
   medium_slope_offset = 0.05,
   medium_slope_noise = 1,
-  high_intercept_offset = 1.5,
+  high_intercept_offset = 0.8,
   high_intercept_noise = 1,
   high_slope_offset = 0.075,
   high_slope_noise = 1
@@ -38,6 +39,8 @@ generate_attitude_sequence(
 \item{curvature}{default 2nd order regression coefficient}
 
 \item{noise}{default SD of noise added to attitude at each timepoint}
+
+\item{noise_ratio}{relative strengths of noise applied to initial intercept, slope and curvature BEFORE other factors}
 
 \item{gender}{a factor string for this participant Boy | Girl}
 
@@ -72,10 +75,28 @@ generate_attitude_sequence(
 \item{high_slope_noise}{Multiplier that is applied to the noise component of the slope calculations for high ses participant}
 }
 \value{
-A tibble of the form |Timepoint|id|gender|ses|attitude|
+A tibble of sequence data in long format
 }
 \description{
-This function is only called internally
+This function should only be \strong{called internally}. This function generates a sequence of values (attitude scores) using a defined quadratic function. Random, normal noise is added to each of the coefficients according to the value of noise and noise_ratio. Further explicitly defined modifiers are applied to intercept and slope depending on gender and SES levels. Noise multipliers can be also defined by these factor variables.
+}
+\details{
+The default model has the following properties with respect to time:
+\itemize{
+\item Both boys and girls have an initial attitude of 0
+\item Low SES students have an initial attitude of 0, while medium SES students have an attitude of 0.5 and high SES students have an attitude of 0.8.
+\item Boys develop at 1.0 point per time period while girls develop at 0.9 (1-0.1) points per time period
+\item Low SES students develop at 1.0 points per time period while medium SES develop at 1.05 points per time period and high SES develop at 1.075 points per time period.
+\item No curvature is expected.
+\item Default noise is drawn randomly from a normal distribution of mean=0 and sd=2 and applied at EVERY time point separately. This models those random factors that vary over time.
+\item Further default noise is applied to the participant's individual initial intercept, slope and curvature to model those factors that vary per participant. By default these are drawn randomly from normal distributions with mean=0 and sd=1.00 (intercept: 2 × 0.5), sd=0.20 (slope: 2 × 0.1), sd=0.04 (curvature: 2 × 0.02)
+\item All additional multipliers for noise due to gender and SES are set to 1. i.e. SES and Gender do not account for any increased noise
+}
+
+Returns a tibble in the form:\tabular{lllll}{
+   Timepoint \tab id \tab gender \tab ses \tab attitude \cr
+   1 \tab a \tab Boy \tab Low \tab 0.234534 \cr
+}
 }
 \examples{
 generate_attitude_sequence('a')
