@@ -15,15 +15,18 @@ considered alongside time data, can be a tricky problem. timefitteR has
 been developed to help test and compare multiple linear models for the
 researcher so that they can make an informed decision about what to
 include and what to exclude. There are two fundamental principles
-underpinning the use of this package: 1. Occam’s Razor - When applied to
-developing models this can be interpreted as the simplest model that can
-predict the observed data should be preferred. 1. Statistical
-Reasonableness - By this we mean that any changes to models developed by
-timefitteR should be statistically significant (they should not be the
-result of chance), statistically meaningful (they should have a
-noticeable effect on the quality of the predicted outcomes), and they
-should be theoretically plausible (there should be some mechanism that
-can be hypothesised to mediate the effect seen between the variables).
+underpinning the use of this package:
+
+1.  Occam’s Razor - When applied to developing models this can be
+    interpreted as the simplest model that can predict the observed data
+    should be preferred.
+2.  Statistical Reasonableness - By this we mean that any changes to
+    models developed by timefitteR should be statistically significant
+    (they should not be the result of chance), statistically meaningful
+    (they should have a noticeable effect on the quality of the
+    predicted outcomes), and they should be theoretically plausible
+    (there should be some mechanism that can be hypothesised to mediate
+    the effect seen between the variables).
 
 This package provides functions to generate semi-deterministic time
 series synthetic data-sets to test various approaches as well as the
