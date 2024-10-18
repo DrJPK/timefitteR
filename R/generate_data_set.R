@@ -21,12 +21,13 @@
 #' @return A long and tidy tibble
 #' @export
 #'
+#'
 #' @examples
 #'
 
 generate_data_set <- function(participants,
-                              groups = c("control","intervention"),
-                              balance = c(1,1),
+                              groups = c("control", "intervention"),
+                              balance = c(1, 1),
                               intercept_difference = c(0),
                               slope_difference = c(1),
                               curvature_difference = c(0),
@@ -37,30 +38,51 @@ generate_data_set <- function(participants,
                               medium_slope_noise_multiplier = c(1),
                               high_slope_difference = c(0),
                               high_slope_noise_muliplier = c(1),
-                              ...
-
-){
+                              ...) {
   stopifnot(is.numeric(participants))
   ##Check that groups and balance matches
-if(length(groups)!=length(balance)){
-  if(length(groups)>length(balance)){
-    cli::cli_alert_warning("The length of balance does not match the length of groups\nThe last element of balance has been recyled. If this is not what you wanted then try again\nThe value of balance being used is: ")
-    for(i in length(balance):length(groups)){
-      balance[i] <- balance[length(balance)]
+  if (length(groups) != length(balance)) {
+    if (length(groups) > length(balance)) {
+      for (i in length(balance):length(groups)) {
+        balance[i] <- balance[length(balance)]
+      }
+      cli::cli_alert_warning(
+        paste0("The length of balance does not match the length of groups\nThe last element of balance has been recycled. If this is not what you wanted then try again\nThe value of balance being used is: (",
+              paste0(balance, collapse=","),")")
+      )
+    } else{
+      balance <- balance[1:length(groups)]
+      cli::cli_alert_warning(
+        paste0(
+          "The length of balance does not match the length of groups\nThe elements of balance have been trimmed to match groups. If this is not what you wanted then try again\nThe value of balance being used is: (",
+          paste0(balance, collapse=","),")")
+
+      )
     }
-    print(balance)
-  }else{
-    cli::cli_alert_warning("The length of balance does not match the length of groups\nThe elements of balance have been trimmed to match groups. If this is not what you wanted then try again\nThe value of balance being used is: ")
-    balance <- balance[1:length(groups)]
-    print(balance)
   }
-}
   ##Check that participants and balance are compatible
-  n = participants %% sum(balance)
-  if(n!=0){
-    participants <- participants+sum(balance)-n
-    cli::cli_alert_warning(paste("The number of participants is not divisable by the balance ratio. The number of participants has been increased to:",participants))
+  if (participants %% sum(balance) != 0) {
+    participants <- participants + sum(balance) - participants %% sum(balance)
+    cli::cli_alert_warning(
+      paste(
+        "The number of participants is not divisable by the balance ratio. The number of participants has been increased to:",
+        participants
+      )
+    )
 
   }
-}
+  #Clean up any params fed to the function
+  n <- length(balance)-1
+  intercept_difference = timefitteR:::fix_param(intercept_difference,n)
+  slope_difference = timefitteR:::fix_param(slope_difference,n)
+  curvature_difference = timefitteR:::fix_param(curvature_difference,n)
+  noise_difference_multiplier = timefitteR:::fix_param(noise_difference_multiplier,n)
+  gender_slope_difference = timefitteR:::fix_param(gender_slope_difference,n)
+  gender_slope_noise_multiplier = timefitteR:::fix_param(gender_slope_noise_multiplier,n)
+  medium_slope_difference = timefitteR:::fix_param(medium_slope_difference,n)
+  medium_slope_noise_multiplier = timefitteR:::fix_param(medium_slope_noise_multiplier,n)
+  high_slope_difference = timefitteR:::fix_param(high_slope_difference,n)
+  high_slope_noise_muliplier = timefitteR:::fix_param(high_slope_noise_muliplier,n)
 
+
+}

@@ -45,6 +45,8 @@
 #'
 #' @return A tibble of sequence data in long format
 #'
+#' @importFrom tibble tibble
+#'
 #' @examples
 #' generate_attitude_sequence('a')
 #'

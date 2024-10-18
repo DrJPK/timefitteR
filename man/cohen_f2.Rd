@@ -32,6 +32,8 @@ f^2 >= 0.35 : Large
 }
 \examples{
 
+library(tibble)
+
 ## Generate some test data where y = x^2 + noise
 df <- tibble::tibble(x = seq(1, 10, length.out = 100), y = x^2 + rnorm(length(x)))
 
