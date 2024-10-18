@@ -64,17 +64,3 @@ if(length(groups)!=length(balance)){
   }
 }
 
-#' Fix Parameters Helper
-#'
-#' This helper function is used by [generate_data_set] to ensure that the length of the parameter vectors passed to the model are of n-length
-#'
-#' @param param a vector of parameter values
-#' @param n the length of the vector to be returned
-#'
-#' @return a vector of n-length
-#'
-#' @examples
-#' fix_param(param=c(1,2,3,4),n=2)
-fix_param <- function(param, n){
-
-}

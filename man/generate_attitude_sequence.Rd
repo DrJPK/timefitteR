@@ -94,7 +94,7 @@ The default model has the following properties with respect to time:
 }
 
 Returns a tibble in the form:\tabular{lllll}{
-   Timepoint \tab id \tab gender \tab ses \tab attitude \cr
+   timepoint \tab id \tab gender \tab ses \tab attitude \cr
    1 \tab a \tab Boy \tab Low \tab 0.234534 \cr
 }
 }
