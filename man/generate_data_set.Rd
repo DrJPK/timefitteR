@@ -56,3 +56,6 @@ A long and tidy tibble
 \description{
 This function can be called to generate a semi-deterministic synthetic data set for a 2 Group{Control,Intervention} × 2 Gender{Boy, Girl} × 3 SES{Low,Medium,High} design. The purpose of this is to produce data for testing the other functions in timefitteR.
 }
+\examples{
+x<-generate_data_set()
+}

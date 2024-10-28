@@ -23,7 +23,7 @@
 #'
 #'
 #' @examples
-#'
+#' x<-generate_data_set()
 
 generate_data_set <- function(participants,
                               groups = c("control", "intervention"),

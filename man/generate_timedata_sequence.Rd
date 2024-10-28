@@ -11,7 +11,7 @@ generate_timedata_sequence(
   noise = 2,
   noise_ratio = c(0.5, 0.1, 0.02),
   from = 0,
-  to = 10
+  length = 10
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ generate_timedata_sequence(
 
 \item{from}{first time point}
 
-\item{to}{last time point}
+\item{length}{number of time points to generate}
 }
 \value{
 A tibble of sequence data in long format

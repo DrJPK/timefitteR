@@ -38,11 +38,23 @@ generate_timedata_sequence <- function(intercept = 0,
                                        slope = 1,
                                        curvature = 0,
                                        noise = 2,
-                                       noise_ratio = c(0.5,0.1,0.02),
+                                       noise_ratio = c(0.5, 0.1, 0.02),
                                        from = 0,
-                                       length = 10
-                                       ) {
-  stopifnot(length(noise_ratio)==3, length>=1, noise>=0)
+                                       length = 10) {
+  stopifnot(is.numeric(from), is.numeric(length))
+
+  tryCatch({
+    length <- as.integer(length)
+  }, error = function(e) {
+    message("Length could not be coerced to integer")
+  })
+  tryCatch({
+    from <- as.integer(from)
+  }, error = function(e) {
+    message("From could not be coerced to integer")
+  })
+
+  stopifnot(length(noise_ratio) == 3, length >= 1, noise >= 0)
   ## Set some fixed noise values for this participant i.e. participant level random effect
   a_noise <- rnorm(1, 0, noise * noise_ratio[1])
   b_noise <- rnorm(1, 0, noise * noise_ratio[2])
@@ -50,8 +62,9 @@ generate_timedata_sequence <- function(intercept = 0,
 
   ## Make the tibble
   df <- tibble::tibble(
-    timepoint = as.integer(seq(from, from+length, by = 1)),
-    attitude = (intercept + a_noise) + (slope + b_noise) * timepoint + (curvature + c_noise) * timepoint^2 + rnorm(length(timepoint), 0, noise)
+    timepoint = as.integer(seq(from, from + length, by = 1)),
+    attitude = (intercept + a_noise) + (slope + b_noise) * timepoint + (curvature + c_noise) * timepoint ^
+      2 + rnorm(length(timepoint), 0, noise)
   )
   return(df)
 }
