@@ -18,7 +18,7 @@ Imports:
 URL: https://github.com/DrJPK/timefitteR
 BugReports: https://github.com/DrJPK/timefitteR/issues
 Collate: 
-    'TimefitteR_Params_List.R'
+    'timefitteR_Params_List.R'
     'cohen_f2.R'
     'fix_param.R'
     'generate_attitude_sequence.R'

@@ -55,7 +55,10 @@ new_timefitteR_Param_List <- function(
 validate_timefitteR_Param_List <- function(x){
   values <- unclass(x)
 
-  if (!all(!is.na(values))){
+  if(length(values)!=6 || !is.list(x)){
+    stop("The parameter list is incomplete.")
+  }
+  if (!all(!is.na(values)) && !all(is.double(values))){
     stop(
       "All parameters must be non-missing and doubles!"
     )
@@ -100,4 +103,34 @@ timefitteR_Param_List <- function(
     as.double(slope_noise),
     as.double(curvature_offset),
     as.double(curvature_noise)))
+}
+
+#' TimefitteR_Param_List
+#'
+#' The is.timefitteR_Param_List is used to check if the supplied argument is a correctly formed and likely valid parameter list for use with timefitteR
+#'
+#' @param x a suspected timefitteR_Param_List object
+#'
+#' @return LOGICAL
+#' @export
+#'
+#' @examples
+#' x <- timefitteR_Param_List()
+#' is.timefitteR_Param_List(x)
+#' # TRUE
+#' x$test <- "something"
+#' is.timefitteR_Param_List(x)
+#' # FALSE
+#'
+is.timefitteR_Param_List <- function(x){
+  if(!identical(attr(x,"class"),"timefitteR_Param_List")){
+    return(FALSE)
+  }else if(!identical(x,tryCatch({
+    validate_timefitteR_Param_List(x)},error = function(e){
+      NULL
+    }))){
+    return(FALSE)
+  }else{
+    return(TRUE)
+  }
 }
