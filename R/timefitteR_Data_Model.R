@@ -1,3 +1,50 @@
+#' Create New TimefitteR Data Model
+#'
+#' The timefitter functions to create synthetic data sets expect to find a certain defined model. This set of functions builds that model. The model general form is:
+#' Model:
+#' -->vars
+#'   -->timevariable
+#'   -->time_params
+#'     -->from
+#'     -->length
+#'     -->step
+#'   -->conditions
+#'   -->predictors
+#'     -->predictor 1
+#'     -->predictor 2
+#'     ....
+#` -->base_params
+#`   -->timefitteR_Param_List
+#` -->condition_params
+#`   -->condition level 2
+#`     -->timefitteR_Param_List
+#`   -->condition level ...
+#` -->predictor_params
+#`   -->predictor 1
+#'     -->predictor 1 level 2
+#'       -->timefitteR_Param_List
+#'     -->predictor 1 level 3 ...
+#'   -->predictor 2
+#'     --> ...
+#'
+#' @param time Name of the variable to be used to represent timepoints
+#' @param conditions A factor variable defining comparison groups e.g., factor(c("Control","Intervention), levels = c("Control","Intervention"))
+#' @param predictors A list of n factors defining the variables to be used as predictors in exploring the model
+#' @param base_params A timefitteR Param List that defines the bases values used to generate the data set for the `[1]` levels of each of the n predictor factors
+#' @param condition_params A list of timefitter_Param_Lists that define the additional parameters for conditions other than the base level
+#' @param predictor_params A list of lists of timefitter_Param_Lists that define the additional parameters for conditions other than the base level
+#' @param from The value of the first time point (usually 0)
+#' @param length The number of time point steps (default 10)
+#' @param step The step size between time points (usually 1)
+#'
+#' @return a timefitteR_Data_Model class
+#' @export
+#'
+#' @examples
+#' y<-new_timefitteR_Data_Model(Timer,conditions = factor(c("Control","Intervention","test")), predictors = list("Gender" = factor(c("Boy","Girl")),"SES" = factor(c("Low","High"),levels = c("Low","High"))), condition_params = list("x"=timefitteR_Param_List(1,2,3,4,5,6),"y"=timefitteR_Param_List(4,5,6,7,8,9)))
+#' y
+#'
+
 new_timefitteR_Data_Model <- function(time,
                                       conditions = factor(),
                                       predictors = list(),
@@ -28,7 +75,7 @@ new_timefitteR_Data_Model <- function(time,
   }
 
   #Clean the Condition Parameters Up
-  condition_params <- clean_param_list(condition_params,conditions)
+  condition_params <- clean_param_list(condition_params,levels(conditions),"conditions")
 
   #Now deal with the predictors
 
@@ -37,13 +84,15 @@ new_timefitteR_Data_Model <- function(time,
   }else{
     tmp_predictor_params <- list()
     for(i in 1:length(predictors)){
-      print(as.name(predictors[i]))
-      tmp_predictor_params <- append(tmp_predictor_params,
-                                   clean_param_list(ifelse(i<length(predictor_params),
-                                                           predictor_params[[i]],
-                                                           list()),
-                                                    predictors[i]))
+      if(i<length(predictor_params)){
+        x=levels(predictor_params[[i]])
+      }else{
+        x = list()
+      }
+      tmp_predictor_params <- append(tmp_predictor_params,list(clean_param_list(x,levels(predictors[[i]]),as.character(names(predictors[i])))))
+
     }
+    names(tmp_predictor_params) <- as.character(names(predictors))
   }
 
 
@@ -77,16 +126,17 @@ new_timefitteR_Data_Model <- function(time,
 #' A function for internal use only
 #'
 #' @param p A list of timefitteR_Param_List objects
-#' @param f A factor with at least 1 level
+#' @param l A vector containing the levels of the factor
+#' @param n A  string containing the name of the factor
 #'
 #' @return A list
 #'
-clean_param_list <-function(p,f){
+clean_param_list <-function(p, l, n){
+
   ##Handle condition parameters
   if (is.list(p)) {
-    n = quote(f)
     if (length(p) == 0) {
-      if (length(levels(f)) == 1) {
+      if (length(l) == 1) {
         cli::cli_alert_info(
           paste("No parameters supplied for",n,"and a variable with only one level was found. This may be OK, but check this is what is intended!")
         )
@@ -94,9 +144,9 @@ clean_param_list <-function(p,f){
         cli::cli_alert_info(
           paste("No parameters supplied for",n,"Default parameters have been set for all levels of the variable.")
         )
-        for (i in 2:length(levels(f))) {
+        for (i in 2:length(l)) {
           p <- append(p, list(timefitteR_Param_List()))
-          names(p)[i - 1] <- as.character(levels(f)[i])
+          names(p)[i - 1] <- as.character(l[i])
         }
       }
     }else{
@@ -106,25 +156,25 @@ clean_param_list <-function(p,f){
           paste(n,"has been passed into the function but its components are not all timefitteR_Param_List objects")
         )
       }else{
-        if(length(p)<length(levels(f))-1){
+        if(length(p)<length(l)-1){
           ##Not enough params
-          for (i in (length(p)+1):(length(levels(f))-1)) {
+          for (i in (length(p)+1):(length(l)-1)) {
             p <- append(p, list(timefitteR_Param_List()))
           }
-          names(p) <- as.character(levels(f)[2:length(levels(f))])
+          names(p) <- as.character(l[2:length(l)])
           cli::cli_alert_info(
             paste("Not enough parameters supplied for all levels of the variable. Default parameters have been set for all additional levels of the ",n," variable.")
           )
-        }else if(length(p)>length(levels(f))-1){
+        }else if(length(p)>length(l)-1){
           ##Too many params
           p <- p[1:(length(f)-1)]
-          names(p) <- as.character(levels(f)[2:length(levels(f))])
+          names(p) <- as.character(l[2:length(l)])
           cli::cli_alert_info(
             "Too many parameters supplied for all levels. Additional parameters have been trimmed."
           )
         }else{
           ##Just right.
-          names(p) <- as.character(levels(f)[2:length(levels(f))])
+          names(p) <- as.character(l[2:length(l)])
         }
       }
     }

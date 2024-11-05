@@ -4,16 +4,18 @@
 \alias{clean_param_list}
 \title{Clean TimefitteR Parameter Lists}
 \usage{
-clean_param_list(p, f)
+clean_param_list(p, l, n)
 }
 \arguments{
 \item{p}{A list of timefitteR_Param_List objects}
 
-\item{f}{A factor with at least 1 level}
+\item{l}{A vector containing the levels of the factor}
+
+\item{n}{A  string containing the name of the factor}
 }
 \value{
 A list
 }
 \description{
-Clean TimefitteR Parameter Lists
+A function for internal use only
 }
