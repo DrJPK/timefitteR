@@ -1,4 +1,27 @@
-.timefitteR_coerce_x_numeric <- function(x,
+#' coerce_x_numeric
+#'
+#' @description
+#' This function is used **internally** to coerce a column of a dataframe into a numeric format suitable for time fitting.
+#'
+#' @details
+#' While time data should generally be organised into order by hand as part of the data cleaning and preparation steps, it is sometimes necessary to do this on the fly.This function is able to take a column vector `x` usually from a dataframe in a number of formats and manipulate this in a predictable way to return an equivalent numeric vector.
+#'
+#' @param x The input vector usually taken from a dataframe
+#' @param prefix An optional string that can be removed from the start of the values in x to get to a number
+#' @param suffix An optional string that can be removed from the end of the values in x to get a number
+#'
+#' @returns A vector of the same length as x coerced to numeric type or an error.
+#' @export
+#'
+#' @examples
+#' x <- as.factor(letters[seq_len(10)])
+#' timefitteR_coerce_x_numeric(x)
+#'
+#' x <- as.character(paste0("Time",sprintf("%02d", sample(1:10, 50, replace = TRUE))))
+#' timefitteR_coerce_x_numeric(x, prefix = "Time")
+#'
+
+timefitteR_coerce_x_numeric <- function(x,
                                         prefix = NULL,
                                         suffix = NULL) {
 
