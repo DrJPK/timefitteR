@@ -39,27 +39,62 @@ new_timefitteR_Data_Model(
 a timefitteR_Data_Model class
 }
 \description{
-The timefitter functions to create synthetic data sets expect to find a certain defined model. This set of functions builds that model. The model general form is:
-Model:
--->vars
--->timevariable
--->time_params
--->from
--->length
--->step
--->conditions
--->predictors
--->predictor 1
--->predictor 2
-....
--->predictor 1 level 2
--->timefitteR_Param_List
--->predictor 1 level 3 ...
--->predictor 2
---> ...
+The timefitter functions to create synthetic data sets expect to find a certain defined model. This set of functions builds that model. You almost certainly want to call \link{timefitteR_Data_Model(interactive = TRUE)} rather than this constructor.
+}
+\details{
+The model general form is:
+\itemize{
+\item Model:
+\itemize{
+\item vars
+\itemize{
+\item timevariable
+\item time_params
+\itemize{
+\item from
+\item length
+\item step
+}
+\item conditions
+\item predictors
+\itemize{
+\item predictor 1
+\item predictor 2
+\item ...
+}
+}
+\item base_params
+\itemize{
+\item timefitteR_Param_List
+}
+\item condition_params
+\itemize{
+\item condition level 2
+\itemize{
+\item timefitteR_Param_List
+}
+\item condition level ...
+}
+\item predictor_params
+\itemize{
+\item predictor 1
+\itemize{
+\item predictor 1 level 2
+\itemize{
+\item timefitteR_Param_List
+}
+\item predictor 1 level 3 ...
+}
+\item predictor 2
+\itemize{
+\item ...
+}
+}
+}
+}
 }
 \examples{
-y<-new_timefitteR_Data_Model(Timer,conditions = factor(c("Control","Intervention","test")), predictors = list("Gender" = factor(c("Boy","Girl")),"SES" = factor(c("Low","High"),levels = c("Low","High"))), condition_params = list("x"=timefitteR_Param_List(1,2,3,4,5,6),"y"=timefitteR_Param_List(4,5,6,7,8,9)))
+y <- new_timefitteR_Data_Model(Timer, conditions = factor(c("Control", "Intervention", "test")), predictors = list("Gender" = factor(c("Boy", "Girl")), "SES" = factor(c("Low", "High"), levels = c("Low", "High"))), condition_params = list("x" = timefitteR_Param_List(1, 2, 3, 4, 5, 6), "y" = timefitteR_Param_List(4, 5, 6, 7, 8, 9)))
 y
 
 }

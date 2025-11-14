@@ -8,36 +8,35 @@
 #' @return an atomic vector of n-length
 #'
 #' @examples
-#' fix_param(param=c(1,2,3,4),n=2)
+#' fix_param(param = c(1, 2, 3, 4), n = 2)
 #'
-
-fix_param <- function(param, n){
+fix_param <- function(param, n) {
   ## Check if it is something we can work with
-  if(!(is.atomic(param) || is.list(param) || is.null(param))){
+  if (!(is.atomic(param) || is.list(param) || is.null(param))) {
     cli::cli_alert_danger("Parameter could not be coerced to a vector")
     stop()
   }
   ## get param into the form of a 1d vector
-  if(is.list(param)){
+  if (is.list(param)) {
     x <- unlist(param)
-  }else if(is.data.frame(param)){
-    x <- as.vector(param[,1])
-  }else{
+  } else if (is.data.frame(param)) {
+    x <- as.vector(param[, 1])
+  } else {
     x <- as.vector(param)
   }
   names(x) <- NULL
   ## get vector length for multiple comparison
   l <- length(x)
   ## Case conditions
-  if(l==n){
+  if (l == n) {
     return(x)
-  }else if(l<n){
-    #extend x to n elements by repeating the last element
-    for(i in l:n){
+  } else if (l < n) {
+    # extend x to n elements by repeating the last element
+    for (i in l:n) {
       x[i] <- x[l]
     }
     return(x)
-  }else{
+  } else {
     return(x[1:n])
   }
 }

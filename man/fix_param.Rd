@@ -18,6 +18,6 @@ an atomic vector of n-length
 This helper function is used by \link{generate_data_set} to ensure that the length of the parameter vectors passed to the model are of n-length. Parameter vectors of the wrong length are trimmed or padded with the last value in order to work.
 }
 \examples{
-fix_param(param=c(1,2,3,4),n=2)
+fix_param(param = c(1, 2, 3, 4), n = 2)
 
 }

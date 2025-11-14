@@ -16,6 +16,6 @@ a timefitteR_Param_List object or error
 Validate a timefitteR_Param_List object
 }
 \examples{
-x <- new_timefitteR_Param_list(0,1,0,1,0,1)
+x <- new_timefitteR_Param_list(0, 1, 0, 1, 0, 1)
 validate_timefitteR_Param_List(x)
 }

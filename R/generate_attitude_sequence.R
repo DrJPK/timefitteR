@@ -1,10 +1,10 @@
 #' Generate a sequence of time points in a semi-deterministic way
 #'
-#'@description
+#' @description
 #'
 #' This function should only be **called internally**. This function generates a sequence of values (attitude scores) using a defined quadratic function. Random, normal noise is added to each of the coefficients according to the value of noise and noise_ratio. Further explicitly defined modifiers are applied to intercept and slope depending on gender and SES levels. Noise multipliers can be also defined by these factor variables.
 #'
-#'@details
+#' @details
 #' The default model has the following properties with respect to time:
 #' - Both boys and girls have an initial attitude of 0
 #' - Low SES students have an initial attitude of 0, while medium SES students have an attitude of 0.5 and high SES students have an attitude of 0.8.
@@ -48,14 +48,14 @@
 #' @importFrom tibble tibble
 #'
 #' @examples
-#' generate_attitude_sequence('a')
+#' generate_attitude_sequence("a")
 #'
 generate_attitude_sequence <- function(id,
                                        intercept = 0,
                                        slope = 1,
                                        curvature = 0,
                                        noise = 2,
-                                       noise_ratio = c(0.5,0.1,0.02),
+                                       noise_ratio = c(0.5, 0.1, 0.02),
                                        gender = "Boy",
                                        ses = "Low",
                                        from = 0,

@@ -33,6 +33,6 @@ timefitteR_Param_List
 This is used internally to ensure that parameter lists are complete.
 }
 \examples{
-x <- new_timefitteR_Param_List(0,1,0,1,0,1)
+x <- new_timefitteR_Param_List(0, 1, 0, 1, 0, 1)
 
 }

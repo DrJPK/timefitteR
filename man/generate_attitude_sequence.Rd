@@ -99,6 +99,6 @@ Returns a tibble in the form:\tabular{lllll}{
 }
 }
 \examples{
-generate_attitude_sequence('a')
+generate_attitude_sequence("a")
 
 }

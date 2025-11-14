@@ -60,7 +60,7 @@ test_that("passing parameters works", {
     x <- as.integer(runif(1, -4, 20))
     if (x < 1) {
       expect_error(generate_timedata_sequence(length = x))
-    } else{
+    } else {
       df <- generate_timedata_sequence(length = x)
       expect_type(df, "list")
       expect_equal(dim(df), c((x + 1), 2))
@@ -72,6 +72,6 @@ test_that("passing parameters works", {
   }
   expect_error(generate_timedata_sequence(length = "a"))
   expect_error(generate_timedata_sequence(from = "a"))
-  expect_error(generate_timedata_sequence(noise_ratio = c(1,2)))
-  expect_error(generate_timedata_sequence(noise_ratio = c(1,2,3,4)))
+  expect_error(generate_timedata_sequence(noise_ratio = c(1, 2)))
+  expect_error(generate_timedata_sequence(noise_ratio = c(1, 2, 3, 4)))
 })
