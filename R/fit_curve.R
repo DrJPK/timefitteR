@@ -21,6 +21,14 @@ fit_curve <- function(data,
     )
   }
 
+  if (nrow(data) == 0L) {
+    rlang::abort(
+      message = "No rows of useable data.",
+      class   = "fit_curve_data_empty",
+      call    = NULL
+    )
+  }
+
   x_col <- .resolve_column(x, data, arg_label = "x", default_idx = 1L)
   t_col <- .resolve_column(t, data, arg_label = "t", default_idx = 2L)
 
@@ -28,42 +36,53 @@ fit_curve <- function(data,
   x_type_original <- class(data[[x_col]])[1L]
   t_type_original <- class(data[[t_col]])[1L]
 
-  if (nrow(data) == 0L) {
-    rlang::abort(
-      message = "No rows of useable data.",
-      class   = "fit_curve_data_empty_after_filter",
-      call    = NULL
-    )
-  }
-
-  #check the numeric format of columns
-  if(!is.numeric(data[[x_col]])){
+  #check the format of columns
+  # x must be numeric
+  if (!is.numeric(data[[x_col]])) {
     rlang::abort(
       message = glue::glue("Column `{x_col}` specified for `x` must be numeric."),
       class   = "fit_curve_x_not_numeric",
       call    = NULL
     )
   }
-  aux_t_col <- ".timefitteR_t_numeric"
-  data[[aux_t_col]] <- .coerce_var_numeric(
+
+  # coerce t to numeric
+  t_num <- .coerce_var_numeric(
     data[[t_col]],
     prefix = t_prefix,
     suffix = t_suffix
   )
 
-  #construct modelling data
-  model_data <- data
-  model_data[["t"]] <- model_data[[aux_t_col]]
-  model_data[["x"]] <- model_data[[x_col]]
+  # construct model_data with only the required columns
+  model_data <- data.frame(
+    t = t_num,
+    x = data[[x_col]]
+  )
 
-  if (!inherits(model, "formula")) {
+  # remove any rows with NA in either x or t
+  keep <- stats::complete.cases(model_data[, c("x", "t"), drop = FALSE])
+  n_dropped <- sum(!keep)
+
+  if (n_dropped > 0L) {
+    rlang::inform(
+      message = glue::glue(
+        "Dropping {n_dropped} row{if (n_dropped == 1L) '' else 's'} with missing `x` and/or `t` before model fitting."
+      ),
+      class = "timefitteR_fit_curve_rows_dropped_na"
+    )
+  }
+
+  model_data <- model_data[keep, , drop = FALSE]
+
+  if (nrow(model_data) == 0L) {
     rlang::abort(
-      message = "Argument `model` must be a formula, e.g. `x ~ t`.",
-      class   = "fit_curve_model_error",
+      message = "No complete cases remain after removing rows with missing `x` and/or `t`.",
+      class   = "fit_curve_data_empty_after_na_filter",
       call    = NULL
     )
   }
 
+  model <- .standardise_model_formula(model, x_col = x_col, t_col = t_col)
   fit_lm <- stats::lm(model, data = model_data)
   sm     <- summary(fit_lm)
 
