@@ -87,6 +87,3 @@ getInput <- function(prompt,check=TRUE,caseSensitive=FALSE,msg=NULL,type="any"){
 getConsoleInput <- function(prompt,check=TRUE,valid=NULL,invalid=NULL,caseSensitive=FALSE,msg=NULL,type="any",rtn="string"){
 
 }
-
-
-`%notin%` <- Negate(`%in%`)

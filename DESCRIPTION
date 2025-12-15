@@ -24,4 +24,4 @@ Collate:
     'generate_attitude_sequence.R'
     'generate_data_set.R'
     'generate_timedata_sequence.R'
-    'utils-pipe.R'
+    'utils.R'
