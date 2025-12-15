@@ -1,10 +1,9 @@
 fit_curve <- function(data,
                       x,
-                      y,
-                      model = y ~ x,
-                      filters = NULL,
-                      x_prefix = NULL,
-                      x_suffix = NULL) {
+                      t,
+                      model = x ~ 1,
+                      t_prefix = NULL,
+                      t_suffix = NULL) {
 
   if(!is.data.frame(data)){
     rlang::abort(
@@ -16,112 +15,50 @@ fit_curve <- function(data,
 
   if(ncol(data) < 2L){
     rlang::abort(
-      message = "Argument `data` must have at least two columns for `x` and `y`.",
+      message = "Argument `data` must have at least two columns for `x` and `t`.",
       class   = "fit_curve_data_error",
       call    = NULL
     )
   }
 
-  #allow bare column names to be passed for x and or y
-  x_quo <- rlang::enquo(x)
-  y_quo <- rlang::enquo(y)
-
-  #default to first two column names if x or y not supplied
-  if(rlang::quo_is_missing(x_quo)){
-    x_col <- names(data)[1L]
-  }else{
-    x_col <- rlang::as_name(x_quo)
-  }
-  if(rlang::quo_is_missing(y_quo)){
-    y_col <- names(data)[2L]
-  }else{
-    y_col <- rlang::as_name(y_quo)
-  }
-
-  #check the columns supplied actually exist else give up
-  if(!x_col %in% names(data)){
-    rlang::abort(
-      message = glue::glue("Column `{x_col}` specified for `x` not found in `data`."),
-      class   = "fit_curve_bad_x",
-      call    = NULL
-    )
-  }
-  if(!y_col %in% names(data)){
-    rlang::abort(
-      message = glue::glue("Column `{y_col}` specified for `y` not found in `data`."),
-      class   = "fit_curve_bad_y",
-      call    = NULL
-    )
-  }
+  x_col <- .resolve_column(x, data, arg_label = "x", default_idx = 1L)
+  t_col <- .resolve_column(t, data, arg_label = "t", default_idx = 2L)
 
   #record original types for traceability (before any coercion)
   x_type_original <- class(data[[x_col]])[1L]
-  y_type_original <- class(data[[y_col]])[1L]
-
-  #apply any filters
-
-  if (!is.null(filters)) {
-    if (!is.list(filters)) {
-      rlang::abort(
-        message = "Argument `filters` must be a list of expressions or one-sided formulas.",
-        class   = "fit_curve_filter_error",
-        call    = NULL
-      )
-    }
-    for (flt in filters) {
-      if (inherits(flt, "formula")) {
-        # one-sided formula: ~ Group == "A"
-        expr <- rlang::f_rhs(flt)
-      } else {
-        expr <- flt
-      }
-
-      keep <- eval(expr, envir = data, enclos = parent.frame())
-
-      if (!is.logical(keep) || length(keep) != nrow(data)) {
-        rlang::abort(
-          message = "Each filter must evaluate to a logical vector of length nrow(data).",
-          class   = "fit_curve_filter_error",
-          call    = NULL
-        )
-      }
-
-      keep[is.na(keep)] <- FALSE
-      data <- data[keep, , drop = FALSE]
-    }
-  }
+  t_type_original <- class(data[[t_col]])[1L]
 
   if (nrow(data) == 0L) {
     rlang::abort(
-      message = "No rows remaining after applying `filters`.",
+      message = "No rows of useable data.",
       class   = "fit_curve_data_empty_after_filter",
       call    = NULL
     )
   }
 
   #check the numeric format of columns
-  if(!is.numeric(data[[y_col]])){
+  if(!is.numeric(data[[x_col]])){
     rlang::abort(
-      message = glue::glue("Column `{y_col}` specified for `y` must be numeric."),
-      class   = "fit_curve_not_numeric",
+      message = glue::glue("Column `{x_col}` specified for `x` must be numeric."),
+      class   = "fit_curve_x_not_numeric",
       call    = NULL
     )
   }
-  aux_x_col <- ".timefitteR_x_numeric"
-  data[[aux_x_col]] <- .timefitteR_coerce_x_numeric(
-    data[[x_col]],
-    prefix = x_prefix,
-    suffix = x_suffix
+  aux_t_col <- ".timefitteR_t_numeric"
+  data[[aux_t_col]] <- .coerce_var_numeric(
+    data[[t_col]],
+    prefix = t_prefix,
+    suffix = t_suffix
   )
 
   #construct modelling data
   model_data <- data
-  model_data[["x"]] <- model_data[[aux_x_col]]
-  model_data[["y"]] <- model_data[[y_col]]
+  model_data[["t"]] <- model_data[[aux_t_col]]
+  model_data[["x"]] <- model_data[[x_col]]
 
   if (!inherits(model, "formula")) {
     rlang::abort(
-      message = "Argument `model` must be a formula, e.g. `y ~ x`.",
+      message = "Argument `model` must be a formula, e.g. `x ~ t`.",
       class   = "fit_curve_model_error",
       call    = NULL
     )
@@ -170,15 +107,15 @@ fit_curve <- function(data,
   #build result object
   res <- list(
     model = model,
+    t = list(
+      col = t_col,
+      type = t_type_original,
+      prefix = t_prefix,
+      suffix = t_suffix
+    ),
     x = list(
       col = x_col,
-      type = x_type_original,
-      prefix = x_prefix,
-      suffix = x_suffix
-    ),
-    y = list(
-      col = y_col,
-      type = y_type_original
+      type = x_type_original
     ),
     coefficients = coef_df,
     fit          = fit,
