@@ -180,6 +180,12 @@ fit_curve <- function(data,
   aic_val    <- stats::AIC(fit_lm)
   bic_val    <- stats::BIC(fit_lm)
   rmse       <- sqrt(mean(stats::residuals(fit_lm)^2))
+  k_params   <- fit_lm$rank
+  aicc_val   <- if (is.finite(aic_val) && n_obs > (k_params + 1L)) {
+    aic_val + (2 * k_params * (k_params + 1L)) / (n_obs - k_params - 1L)
+  } else {
+    NA_real_
+  }
 
   # coefficients: Estimate and p-value
   coef_df <- as.data.frame(sm$coefficients)
@@ -189,6 +195,7 @@ fit_curve <- function(data,
   # fit metrics
   fit <- list(
     n             = n_obs,
+    k_params      = k_params,
     r.squared     = unname(sm$r.squared),
     adj.r.squared = unname(sm$adj.r.squared),
     rse           = unname(sm$sigma),
@@ -196,6 +203,7 @@ fit_curve <- function(data,
     df_resid      = df_resid,
     rss           = rss,
     aic           = aic_val,
+    aicc          = aicc_val,
     bic           = bic_val,
     logLik        = logLik_val
   )
